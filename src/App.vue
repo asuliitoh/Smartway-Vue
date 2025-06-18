@@ -1,47 +1,43 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+  
+  import { ref } from 'vue'
+  import Header from './components/Header.vue';
+  import Tarea from './components/Tarea.vue';
+  const tareas = ref([ {message: 'Terminar Piolify', done: false}, {message:'Terminar AppChat', done: false}])
+  const nuevaTarea = ref('')
+  function addTarea() {
+    tareas.value.push({message: nuevaTarea.value, done:false});
+    nuevaTarea.value='';
+  }
+
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+  <Header class="row-start-1"></Header>
+  <div class="min-h-screen grid auto-cols-min grid-cols-2 ">
+    
+      <section id="cta" class="pl-10 row-start-2 row-span-2 col-start-1 justify-self-center">
+        <h1 class="text-7xl text-left font-bold pb-5">¡Bienvenidos a la Operación DataStorm!</h1>
+        <p class="text-xl"> Lleva el control de tu día a día con nuestra app ToDo: simple, rápida y pensada para ayudarte
+            a cumplir tus objetivos sin estrés. Organiza tus tareas, recibe recordatorios inteligentes y enfócate
+            en lo que realmente importa. Empieza ahora y transforma tu caos en claridad con solo unos toques.</p>
+      </section>
+    
+      <div id="input" class="row-start-2 row-span-2 col-start-2 justify-self-center">
+        <h2 class="text-4xl font-semibold">Introduce una tarea:</h2>
+        <form @submit.prevent="addTarea">
+          <input v-model="nuevaTarea" placeholder="Nombre de la tarea">
+        </form>
+        <template v-for="tarea in tareas">
+          <Tarea v-model="tarea.done" :title='tarea.message'></Tarea>
+        </template>
+      </div>   
+ 
+  </div>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+<style>
+@import "tailwindcss";
 </style>
