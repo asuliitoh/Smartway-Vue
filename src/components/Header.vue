@@ -3,10 +3,21 @@
 </script>
 
 <template>
-    <div id="header" class="pt-1 top-0 flex items-center">
-        <img id="logo" src="/public/favicon.ico" alt="logo" class="w-10 h-10">
-        <p id="titulo" class="font-bold" >CiberPulseLabs</p>
-    </div>
+
+    <header class="pr-5 w-full flex flex-col items-center sm:flex-row sm:justify-between top-0 z-1" id="barraprincipal">     
+            <div class="flex" id="identidadempresa">
+                <div id="logotipoempresa"><img class="w-8 h-8" id="logo"src="/public/favicon.ico" alt="Logotipo de CiberPulse Labs" ></div>
+                <div class="text-[1rem] font-bold" id="nombreempresa"><h2>CiberPulse Labs</h2></div>
+            </div>
+
+            <nav class="text-center" id="menunavegacion">      
+                <ul class="flex items-center list-none" role="list">
+                <li class="flex"><a class="rounded-xl font-medium self-stretch p-[10px] no-underline" id="inicio" href="#inicio">Inicio</a></li>
+                <li class="flex"><a class="rounded-xl font-medium self-stretch p-[10px] no-underline" id="nosotros" href="#nosotros" >Sobre Nosotros</a></li>
+                <li class="flex"><a class="rounded-xl font-medium self-stretch p-[10px] no-underline" id="servicios" href="#servicios" >Servicios</a></li>
+                </ul>
+            </nav>
+        </header>
 
 
 </template>
