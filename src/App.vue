@@ -8,19 +8,23 @@
 
 <template>
  
-    <Header></Header>
+    
 
-    <div class="grid grid-cols-2 flex-grow">
-
-      <section id="cta" class="p-10  col-start-1 flex flex-col justify-center">
-        <h1 class="text-7xl text-left font-bold pb-5">¡Bienvenidos a la Operación DataStorm!</h1>
-        <p class="text-xl"> Lleva el control de tu día a día con nuestra app ToDo: simple, rápida y pensada
+    <div class="ml-20 mr-20 flex flex-grow flex-col h-screen ">
+      <Header class=""></Header>
+      
+      <section class="flex flex-col flex-grow justify-center">
+        <h1 class="text-7xl text-center font-bold pb-5">¡Bienvenidos a la Operación DataStorm!</h1>
+        <p class="text-xl text-center pb-10"> Lleva el control de tu día a día con nuestra app ToDo: simple, rápida y pensada
         para ayudarte a cumplir tus objetivos sin estrés. Organiza tus tareas, recibe recordatorios inteligentes
         y enfócate en lo que realmente importa. Empieza ahora y transforma tu caos en claridad con solo unos toques.
         </p>
+         <ToDoApp></ToDoApp>
       </section>
-        
-      <ToDoApp class="col-start-2"></ToDoApp>
+     
+      
+
+      
       
      
 
