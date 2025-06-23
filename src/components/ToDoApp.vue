@@ -1,9 +1,26 @@
 <script setup>
-  import { ref } from 'vue';
+  import { onMounted, ref } from 'vue';
   import ToDoCard from './ToDoCard.vue';
+  import axios from 'axios';
 
-  const toDos = ref([ {title: 'Terminar Piolify', done: false}, {title:'Terminar AppChat', done: false}])
-  const selectedToDo = ref(null)
+
+  const toDos = ref([])
+  const axiosInstance = axios.create({
+    baseURL: "https://localhost:7190/",
+  });
+
+  onMounted(async () => {
+    const data= await axiosInstance.get("ToDoItems/");
+    console.log(data.data);
+    for (let i = 0 ; i < data.data.length; i++) {
+      toDos.value.push( {title: data.data[i].title, description: data.data[i].description, done:data.data[i].done, date:data.data[i].date});
+
+    }
+  })
+  
+  
+
+ const selectedToDo = ref(null)
 
   const nuevaTarea = ref('')
   
@@ -28,9 +45,8 @@
 </script>
 
 <template>
-    
-    <div v-if="!selectedToDo" class="grid grid-rows-[auto_1fr] gap-x-4 ">
-        
+  
+      <div v-if="!selectedToDo" class="grid grid-rows-[auto_1fr] gap-x-4 ">
         
         <div class="row-start-1 col-span-full flex flex-row">
 
@@ -63,7 +79,7 @@
 
     <div v-else class="p-10 flex flex-row justify-center items-center">
       <img @click="unselectToDo" class="cursor-pointer pr-5" src="/src/components/icons/left-arrow.png" alt="Volver"/>
-      <ToDoCard v-model:title="selectedToDo.title" v-model:done="selectedToDo.done" @delete="deleteToDo"></ToDoCard>
+      <ToDoCard v-model:title="selectedToDo.title" v-model:done="selectedToDo.done" v-model:description="selectedToDo.description" v-model:date="selectedToDo.date" @delete="deleteToDo"></ToDoCard>
       
     </div>
     

@@ -2,9 +2,9 @@
 
 import { ref } from 'vue';
 
-const date = new Date()
+
 const editar = ref(false)
-const dateString = date.toLocaleString();
+const date = defineModel("date", {required: true, default: "no tiene fecha"})
 const title = defineModel("title", {required: true, default: "No posee nombre" })
 const description = defineModel("description", {required: false, default:"No dispone de descripción"})
 const done = defineModel("done", {required: true, default:false})
@@ -30,7 +30,7 @@ function deleteToDo() {
         <textarea v-else v-model="description" class="resize-none h-full bg-white border-b-2 pl-2 border-gray-300 text-base"></textarea>
 
         <h2 class="h-full bg-gray-100 border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Fecha de creación</h2>
-        <p class="h-full bg-gray-100 border-b-2 pl-2 border-r-2 border-gray-300 text-base">{{ dateString }}</p>
+        <p class="h-full bg-gray-100 border-b-2 pl-2 border-r-2 border-gray-300 text-base"> {{ new Date(date).toLocaleString() }} </p>
 
         <h2 class="h-full bg-white border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Estado</h2>
         <p v-if="!editar" class="h-full bg-white border-b-2 pl-2 border-gray-300 text-base"> 

@@ -1,8 +1,9 @@
 <script setup>
-  
   import { ref } from 'vue'
   import Header from './components/Header.vue';
   import ToDoApp from './components/ToDoApp.vue';
+
+
 
 </script>
 
@@ -21,12 +22,7 @@
         </p>
          <ToDoApp></ToDoApp>
       </section>
-     
-      
-
-      
-      
-     
+   
 
     </div>
     
