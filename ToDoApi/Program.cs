@@ -22,7 +22,7 @@ builder.Services.AddCors(o =>
     o.AddPolicy(name: nameVue,
     policy =>
     {
-        policy.WithOrigins("http://localhost:5174")
+        policy.WithOrigins("http://localhost:5173")
         .AllowAnyHeader()
         .AllowAnyMethod();
     });

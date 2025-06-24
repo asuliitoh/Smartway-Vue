@@ -4,7 +4,7 @@
 
 <template>
 
-    <header class="pr-5 w-full flex flex-col items-center sm:flex-row sm:justify-between top-0 z-1" id="barraprincipal">     
+    <header class="w-full flex flex-col items-center sm:flex-row sm:justify-between top-0" id="barraprincipal">     
             <div class="flex" id="identidadempresa">
                 <div id="logotipoempresa"><img class="w-8 h-8" id="logo"src="/public/favicon.ico" alt="Logotipo de CiberPulse Labs" ></div>
                 <div class="text-[1rem] font-bold" id="nombreempresa"><h2>CiberPulse Labs</h2></div>

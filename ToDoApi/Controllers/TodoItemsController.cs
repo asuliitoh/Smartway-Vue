@@ -45,14 +45,14 @@ namespace ToDoApi.Controllers
         // PUT: /TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, WriteTodoItemDTO todoDTO)
+        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
         {
-            if (id != todoDTO.Id)
+            if (id != todoItem.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(todoDTO).State = EntityState.Modified;
+            _context.Entry(todoItem).State = EntityState.Modified;
 
             try
             {
@@ -80,11 +80,9 @@ namespace ToDoApi.Controllers
         {
             var todoItem = new TodoItem
             {
-                Id = todoDTO.Id,
                 Done = false,
                 Date = DateTime.Now,
                 Title = todoDTO.Title,
-                Description = todoDTO.Description,
         
             };
 
@@ -97,7 +95,7 @@ namespace ToDoApi.Controllers
             //Agrega un encabezado Location a la respuesta para especificar el URI del elemento Todo recién creado.
             //Utiliza el método GetTodoItem para crear el identificador URI del encabezado Location.
 
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, ItemToDTO(todoItem));
+            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
         }
 
         // DELETE:/TodoItems/5
@@ -120,13 +118,6 @@ namespace ToDoApi.Controllers
         {
             return _context.TodoItems.Any(e => e.Id == id);
         }
-    private static WriteTodoItemDTO ItemToDTO(TodoItem todoItem) =>
-       new WriteTodoItemDTO
-       {
-           Id = todoItem.Id,
-           Title = todoItem.Title,
-           Description = todoItem.Description,
-       };
-
+    
     }
 }

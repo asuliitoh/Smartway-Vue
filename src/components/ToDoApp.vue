@@ -1,87 +1,145 @@
 <script setup>
-  import { onMounted, ref } from 'vue';
+
+  //Imports necesarios
+  import { onMounted, ref, computed, reactive} from 'vue';
   import ToDoCard from './ToDoCard.vue';
   import axios from 'axios';
 
-
-  const toDos = ref([])
+  //Objetos reactivos
+  const toDos = reactive(new Map()) // toDos = Map reactivo que almacena para cada ToDoItem por su ID.
+  const selectedToDo = ref(null) // selectedToDo = Objeto reactivo que almacena el ToDoItem actual seleccionado.
+  const newToDo = ref('') // newToDo = Objeto reactivo que almacena el nombre de la nueva tarea a introducir.
+  const isToDosEmpty = computed(() => {return (toDos.size == 0)}) //Ref computada que devuelve true si toDos está vacia.
+ 
+  
+  /**
+   * Creación del cliente HTTP mediante Axio. 
+   * Se especifica como servidor a la API ASP Net.
+   */
   const axiosInstance = axios.create({
     baseURL: "https://localhost:7190/",
   });
 
+  /**
+   * Una vez se ha montado el componente, se realiza una solicitud HTTP GET
+   * a la API para obtener las tareas definidas.
+   */
   onMounted(async () => {
     const data= await axiosInstance.get("ToDoItems/");
-    console.log(data.data);
+    
     for (let i = 0 ; i < data.data.length; i++) {
-      toDos.value.push( {title: data.data[i].title, description: data.data[i].description, done:data.data[i].done, date:data.data[i].date});
-
-    }
+      toDos.set(data.data[i].id, 
+        
+        {id:data.data[i].id,
+        title: data.data[i].title,
+        description: data.data[i].description,
+        done:data.data[i].done,
+        date:data.data[i].date}
+      
+      )
+    
+      }
   })
   
-  
-
- const selectedToDo = ref(null)
-
-  const nuevaTarea = ref('')
-  
+/**
+ * Función utilizada a la hora de crear una nueva tarea.
+ * Se envía primero una solicitud HTTP POST a la API con
+ * el nombre de la tarea. Una vez la API responde, se
+ * introduce en el Map la tarea devuelta por la API.
+ */
   function addToDo() {
-    toDos.value.push({title: nuevaTarea.value, done:false});
-    nuevaTarea.value='';
+    const res = ref();
+    axiosInstance.post("ToDoItems/", {title: newToDo.value}).then( response => {
+
+      toDos.set(response.data.id, 
+        
+      {id:response.data.id,
+        title: response.data.title,
+        description: response.data.description,
+        done: response.data.done,
+        date: response.data.date
+      })
+
+      newToDo.value = '';
+
+    });
+    
   }
 
-  function selectToDo(toDo) {
-    selectedToDo.value = toDo
-  }
+  /**
+   * Función que asigna como seleccionada una tarea.
+   * @param id  ID de la tarea a seleccionar.
+   */
+  function selectToDo(id) {selectedToDo.value = toDos.get(id); console.log(selectedToDo.value)}
 
-  function unselectToDo() {
-    selectedToDo.value = null
-  }
+  /**
+   * Función que deselecciona la tarea actual seleccionada.
+   */
+  function unselectToDo() {selectedToDo.value = null;}
 
+  /**
+   * Función que elimina una tarea. Para ello, envía una solicitud
+   * HTTP DELETE a la API, y si no hay errores, elimina localmente.
+   */
   function deleteToDo() {
-    toDos.value.splice(toDos.value.findIndex(selectToDo), 1)
-    unselectToDo()
+
+    console.log(selectedToDo.value);
+    axiosInstance.delete(`ToDoItems/${selectedToDo.value.id}`).then(() => {
+      toDos.delete(selectedToDo.value.id);
+      unselectToDo();
+    })    
+  }
+
+  /**
+   * Método que actualiza una tarea. Para ello, envía una solicitud HTTP PUT a
+   * la API, y si no hay errores, actualiza localmente.
+   * TODO: Revisar método. Actualmente funciona, pero se llama repetidas veces.
+   */
+  function updateToDo(){
+
+    axiosInstance.put(`ToDoItems/${selectedToDo.value.id}`, {id: selectedToDo.value.id,
+      title:selectedToDo.value.title,
+      description:selectedToDo.value.description,
+      done:selectedToDo.value.done,
+      date:selectedToDo.value.date
+    });
   }
 
 </script>
 
 <template>
   
-      <div v-if="!selectedToDo" class="grid grid-rows-[auto_1fr] gap-x-4 ">
-        
-        <div class="row-start-1 col-span-full flex flex-row">
+      <div v-if="!selectedToDo" class="p-10 grid grid-rows-[auto_1fr] gap-x-4 border border-gray-300">
+        <p class="text-left font-bold text-xl pb-5">ToDoList App</p>
 
-          <!--
-            <h2 class="row-start-1 col-start-1 text-5xl font-semibold pr-10 ">Introduce una tarea:</h2>
-            <form @submit.prevent="addToDo" class="row-start-1 col-start-2 flex items-center" >
-                <input class="border-2 rounded-lg text-xs h-full" v-model="nuevaTarea" placeholder="Nombre de la tarea">
-            </form>
-          -->
-        </div>
-        
+        <form @submit.prevent="addToDo">   
+          <label for="search" class="mb-2 text-sm font-medium text-gray-900"></label>
+          <div class="flex flex-row border border-gray-300 rounded-lg bg-gray-50 p-2">
+              <input type="text" id="search" v-model="newToDo" class="block w-full text-sm text-gray-900" placeholder="Introduce una tarea" />
+              <button type="button" @click="addToDo" class="text-white bg-black self-center font-medium rounded-lg text-sm px-4 py-2">Añadir</button>
+          </div>
+        </form>
 
-        <div class="col-span-full grid auto-cols-3 auto-rows-2 border border-gray-300 rounded-xl [&>*:nth-last-child(n+4)]:border-b [&>:not(:nth-child(3n))]:border-r [&>*]:border-gray-300">
-            <h3 class="font-bold row-start-1 col-start-1"> Nombre de la tarea</h3>
-            <h3 class="font-bold row-start-1 col-start-2"> Estado de la tarea</h3>
-            <h3 class="font-bold row-start-1 col-start-3">Acciones</h3>
-            <template v-for="toDo in toDos">
-                <p class="col-start-1 font-semibold p-2"> {{ toDo.title }} </p>
-                <p class="text-green-500 font-semibold col-start-2" v-if="toDo.done">Hecho</p>
-                 <p class="text-red-500 font-semibold col-start-2" v-else>No hecho</p>      
-                <div id="botones" class="col-start-3 flex flex-row">
-                    <button @click="toDo.done = !toDo.done" type="button" class=" font-semibold bg-white border-2 rounded-lg pl-2 pr-2 m-1">Marcar como completada</button>
-                    <button @click="selectToDo(toDo)" type="button" class="font-semibold bg-white border-2 rounded-lg m-1 pl-2 pr-2">Editar</button>
-                </div>  
+        <div v-if="!isToDosEmpty" class="mt-10 col-span-full border border-collapse border-gray-300">
+            <template v-for="[toDoID, toDoValue] in toDos">
+               <ul>
+                  <li class=" border border-gray-300 flex justify-between items-center p-4">
+                    <div class="flex items-center">
+                      <input type="checkbox" class="form-checkbox h-5 w-5" v-model="toDoValue.done" />
+                      <span class="ml-3" :class="{'line-through' : toDoValue.done }" >{{ toDoValue.title }}</span>
+                    </div>
+                    <a class="text-xs cursor-pointer" @click="selectToDo(toDoID)">Editar</a>
+                  </li>
+               </ul>
             </template>
-
         </div>
-        <button type="button" class="bg-white border border-t-0 border-gray-300 hover:bg-gray-100 rounded-lg p-2 font-semibold ">Introducir Tarea</button>
-    </div>   
+      </div>   
 
-    <div v-else class="p-10 flex flex-row justify-center items-center">
-      <img @click="unselectToDo" class="cursor-pointer pr-5" src="/src/components/icons/left-arrow.png" alt="Volver"/>
-      <ToDoCard v-model:title="selectedToDo.title" v-model:done="selectedToDo.done" v-model:description="selectedToDo.description" v-model:date="selectedToDo.date" @delete="deleteToDo"></ToDoCard>
-      
-    </div>
+      <div v-else>
+         <ToDoCard v-model:title="selectedToDo.title" v-model:done="selectedToDo.done" v-model:description="selectedToDo.description" v-model:date="selectedToDo.date" @delete="deleteToDo" @update="updateToDo"></ToDoCard>
+      </div>
+
+  
     
 </template>
 

@@ -1,6 +1,6 @@
 <script setup>
 
-import { ref } from 'vue';
+import { ref, watch} from 'vue';
 
 
 const editar = ref(false)
@@ -8,12 +8,18 @@ const date = defineModel("date", {required: true, default: "no tiene fecha"})
 const title = defineModel("title", {required: true, default: "No posee nombre" })
 const description = defineModel("description", {required: false, default:"No dispone de descripción"})
 const done = defineModel("done", {required: true, default:false})
+const edited = ref(false)
+const emits = defineEmits(["delete", "update"])
 
-const emits = defineEmits(["delete"])
+const toDoCopy = ref({title: title, description: description, done: done})
 
 function deleteToDo() {
     emits("delete")
 }
+
+watch([title, description, done, date], () => {
+    emits("update")
+})
 
 </script>
 
@@ -23,18 +29,18 @@ function deleteToDo() {
 
         <h2 class="h-full bg-gray-100 border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Nombre de la tarea</h2>
         <p v-if="!editar" class="h-full bg-gray-100 pl-2 border-b-2 border-gray-300 font-normal text-base"> {{ title }}</p>
-        <textarea v-else v-model="title" class="resize-none h-full bg-gray-100 pl-2 border-b-2 border-gray-300 font-normal text-base"></textarea>
+        <textarea v-else v-model="toDoCopy.title" class="resize-none h-full bg-gray-100 pl-2 border-b-2 border-gray-300 font-normal text-base"></textarea>
 
         <h2 class="h-full bg-white border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Descripción de la tarea</h2>
         <p v-if="!editar" class="h-full bg-white border-b-2 pl-2 border-gray-300 text-base">{{ description }}</p>
-        <textarea v-else v-model="description" class="resize-none h-full bg-white border-b-2 pl-2 border-gray-300 text-base"></textarea>
+        <textarea v-else v-model="toDoCopy.description" class="resize-none h-full bg-white border-b-2 pl-2 border-gray-300 text-base"></textarea>
 
         <h2 class="h-full bg-gray-100 border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Fecha de creación</h2>
         <p class="h-full bg-gray-100 border-b-2 pl-2 border-r-2 border-gray-300 text-base"> {{ new Date(date).toLocaleString() }} </p>
 
         <h2 class="h-full bg-white border-b-2 border-r-2 border-gray-300 pl-2 font-semibold text-base">Estado</h2>
         <p v-if="!editar" class="h-full bg-white border-b-2 pl-2 border-gray-300 text-base"> 
-            <span v-if="done">Hecho</span>
+            <span v-if="toDoCopy.done">Hecho</span>
             <span v-else>No Hecho</span>
         </p>
         <select v-else v-model="done" class="h-full bg-white border-b-2 pl-2 border-gray-300 text-base">
