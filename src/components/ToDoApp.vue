@@ -4,7 +4,7 @@
   import { onMounted, ref, computed, reactive} from 'vue';
   import ToDoCard from './ToDoCard.vue';
   import axios from 'axios';
-import ToDoList from './ToDoList.vue';
+  import ToDoList from './ToDoList.vue';
 
   //Objetos reactivos
   const toDos = reactive(new Map()) // toDos = Map reactivo que almacena para cada ToDoItem por su ID.
@@ -48,7 +48,6 @@ import ToDoList from './ToDoList.vue';
  * introduce en el Map la tarea devuelta por la API.
  */
   function addToDo() {
-    const res = ref();
     axiosInstance.post("ToDoItems/", {title: newToDo.value}).then( response => {
 
       toDos.set(response.data.id, 
@@ -106,7 +105,7 @@ import ToDoList from './ToDoList.vue';
           </div>
         </form>
 
-        <div v-if="!isToDosEmpty" class="mt-10 col-span-full">
+        <div v-if="!isToDosEmpty" class=" mt-5 col-span-full">
            <ToDoList v-bind:toDos="toDos" @update="(toDo) => updateToDo(toDo)" @delete="(toDo) => deleteToDo(toDo)"></ToDoList>
         </div>
       </div>     

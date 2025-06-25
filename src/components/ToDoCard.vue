@@ -1,69 +1,74 @@
 <script setup>
+    import { ref, defineProps} from 'vue';
 
-import { ref, defineProps} from 'vue';
+    //Objetos Reactivos
+    const editar = ref(false) //Utilizado para permitir el modo edición.
+    const props = defineProps({ //Propiedades del componente.
+        
+        title: {
+            type: String,
+            required: true
+        },
+
+        date: {
+            type: String,
+            required: true,
+        },
+
+        description: {
+            type: String,
+            required: false
+        },
+
+        done: {
+            type: Boolean,
+            required: true,
+        }
+
+    })
+
+    //Tarea actual. Esta copia permite actualizar sus valores con el modo edición.
+    const toDo = ref({title: props.title, date: props.date, description: props.description, done: props.done})
+
+    //Eventos definidos del componente.
+    const emits = defineEmits(["delete", "update", "close"])
 
 
-const editar = ref(false)
-const props = defineProps({
-    
-    title: {
-        type: String,
-        required: true
-    },
 
-    date: {
-        type: String,
-        required: true,
-    },
-
-    description: {
-        type: String,
-        required: false
-    },
-
-    done: {
-        type: Boolean,
-        required: true,
+    /**
+     * Función que emite el evento "delete" a su componente padre.
+     */
+    function deleteToDo() {
+        emits("delete")
     }
 
-})
+    /**
+     * Función que emite el evento "update" a su componente padre. Si no se ha editado ningun campo, no se emite.
+     */
+    function updateToDo() {
 
+        if (props.title !== toDo.value.title || props.description !== toDo.value.description || props.done !== toDo.value.done) {
 
-const toDo = ref({title: props.title, date: props.date, description: props.description, done: props.done})
-const emits = defineEmits(["delete", "update", "close"])
+            emits("update", {title: toDo.value.title, date: props.date, description: toDo.value.description, done:toDo.value.done})
 
-function deleteToDo() {
-    emits("delete")
-}
-
-function updateToDo() {
-
-    if (props.title !== toDo.value.title || props.description !== toDo.value.description || props.done !== toDo.value.done) {
-
-        emits("update", {title: toDo.value.title, date: props.date, description: toDo.value.description, done:toDo.value.done})
+        }
+        editar.value = !editar.value
 
     }
 
-    editar.value = !editar.value
-
-}
-
-function close() {
-    if (editar.value === false) {
-
-        updateToDo();
-        emits("close")
-
+    /**
+     * Función que emite el evento "close" a su componente padre. Si se está en modo edición, no es posible editar.
+     */
+    function close() {
+        if (editar.value === false) {
+            emits("close")
+        }
     }
-    
-}
-
-
 
 </script>
 
 <template>
-    <div class="flex justify-end pb-2"><img src="/src/components/icons/close.png" :class = "{'cursor-pointer': !editar}" alt="Cerrar" @click="close"></div>
+    <div v-if="!editar" class="flex justify-end pb-2"><img src="/src/components/icons/close.png" :class = "{'cursor-pointer': !editar}" alt="Cerrar" @click="close"></div>
     
     <div id="card" class="tracking-tight border-gray-300 border-2 rounded-xl grid auto-rows-5 grid-cols-2 items-center">
     
@@ -95,11 +100,6 @@ function close() {
         </div>
 
     </div>
-
-
-
-
-
 
 </template>
 
