@@ -21,24 +21,30 @@
   });
 
   /**
+   * Función auxiliar utilizada para actualizar 
+   * la lista de tareas que se almacena.
+   * @param response Respuesta de la API
+   */
+  function actualizarListaToDos(response){
+      toDos.clear()
+      for (let i = 0 ; i < response.data.length ; i++) {
+        toDos.set(response.data[i].id, 
+        {id:response.data[i].id,
+        title: response.data[i].title,
+        description: response.data[i].description,
+        done: response.data[i].done,
+        date: response.data[i].date
+      })
+
+      }
+  }
+
+  /**
    * Una vez se ha montado el componente, se realiza una solicitud HTTP GET
    * a la API para obtener las tareas definidas.
    */
   onMounted(async () => {
-    const data= await axiosInstance.get("ToDoItems/");
-    
-    for (let i = 0 ; i < data.data.length; i++) {
-      toDos.set(data.data[i].id, 
-        
-        {id:data.data[i].id,
-        title: data.data[i].title,
-        description: data.data[i].description,
-        done:data.data[i].done,
-        date:data.data[i].date}
-      
-      )
-    
-      }
+      await axiosInstance.get("ToDoItems/").then( response => {actualizarListaToDos(response)})
   })
   
 /**
@@ -49,16 +55,8 @@
  */
   function addToDo() {
     axiosInstance.post("ToDoItems/", {title: newToDo.value}).then( response => {
-
-      toDos.set(response.data.id, 
-        
-      {id:response.data.id,
-        title: response.data.title,
-        description: response.data.description,
-        done: response.data.done,
-        date: response.data.date
-      })
-
+      
+      actualizarListaToDos(response)
       newToDo.value = '';
 
     });
@@ -86,7 +84,7 @@
   function updateToDo(toDo){
 
     axiosInstance.put(`ToDoItems/${toDo.id}`, {id: toDo.id, title:toDo.title,
-      description: toDo.description, date: toDo.date, done: toDo.done}).then(toDos.set(toDo.id, toDo))
+      description: toDo.description, date: toDo.date, done: toDo.done}).then(response => {actualizarListaToDos(response)})
     }
 
 
@@ -99,9 +97,9 @@
 
         <form @submit.prevent="addToDo">   
           <label for="search" class="mb-2 text-sm font-medium text-gray-900"></label>
-          <div class="flex flex-row border border-gray-300 rounded-lg bg-gray-50 p-2">
-              <input type="text" id="search" v-model="newToDo" class="block w-full text-sm text-gray-900" placeholder="Introduce una tarea" />
-              <button type="button" @click="addToDo" class="text-white bg-black self-center font-medium rounded-lg text-sm px-4 py-2">Añadir</button>
+          <div class="flex flex-col gap-2 sm:gap-0 sm:flex-row items-stretch sm:items-center border border-gray-300 rounded-lg bg-gray-50 p-2">
+              <input type="text" id="search" v-model="newToDo" class="wrap-anywhere block w-full text-sm text-gray-900 placeholder:text-xs lg:placeholder:text-sm" placeholder="Introduce una tarea" />
+              <button type="button" @click="addToDo" class="text-white bg-black self-center font-medium rounded-lg text-xs sm:text-sm px-4 py-2">Añadir</button>
           </div>
         </form>
 

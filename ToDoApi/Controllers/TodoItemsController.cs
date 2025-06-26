@@ -45,7 +45,7 @@ namespace ToDoApi.Controllers
         // PUT: /TodoItems/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        public async Task<ActionResult<IEnumerable<TodoItem>>> PutTodoItem(long id, TodoItem todoItem)
         {
             if (id != todoItem.Id)
             {
@@ -57,6 +57,7 @@ namespace ToDoApi.Controllers
             try
             {
                 await _context.SaveChangesAsync();
+               
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -70,13 +71,13 @@ namespace ToDoApi.Controllers
                 }
             }
 
-            return NoContent();
+             return await _context.TodoItems.ToListAsync();
         }
 
         // POST:/TodoItems
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<TodoItem>> PostTodoItem(WriteTodoItemDTO todoDTO)
+        public async Task<ActionResult<IEnumerable<TodoItem>>> PostTodoItem(WriteTodoItemDTO todoDTO)
         {
             var todoItem = new TodoItem
             {
@@ -95,7 +96,7 @@ namespace ToDoApi.Controllers
             //Agrega un encabezado Location a la respuesta para especificar el URI del elemento Todo recién creado.
             //Utiliza el método GetTodoItem para crear el identificador URI del encabezado Location.
 
-            return CreatedAtAction(nameof(GetTodoItem), new { id = todoItem.Id }, todoItem);
+             return await _context.TodoItems.ToListAsync();
         }
 
         // DELETE:/TodoItems/5
